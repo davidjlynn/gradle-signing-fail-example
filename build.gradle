@@ -1,0 +1,39 @@
+plugins {
+  id 'maven-publish'
+  id 'signing'
+}
+
+group = 'io.github.davidjlynn'
+
+publishing {
+  publications {
+    maven(MavenPublication) {
+      groupId = 'io.github.davidjlynn'
+      artifactId = rootProject.name
+      version = '0.0.1'
+
+      // BASE
+      artifact("$projectDir/dist/arch-base/test.txt") {
+        classifier 'base'
+        extension 'txt'
+      }
+      // Different file name - Works
+      artifact("$projectDir/dist/arch-diff-pass/test") {
+        classifier 'pass'
+        extension 'txt'
+      }
+      // Same file name - Fails
+      artifact("$projectDir/dist/arch-same-fail/test.txt") {
+        classifier 'fail'
+        extension 'txt'
+      }
+    }
+  }
+}
+
+signing {
+  def signingKey = project.getProperty('SIGNING_PRIVATE_KEY')
+  def signingPassword = project.getProperty('SIGNING_PASSWORD')
+  useInMemoryPgpKeys(signingKey, signingPassword)
+  sign publishing.publications.maven
+}
